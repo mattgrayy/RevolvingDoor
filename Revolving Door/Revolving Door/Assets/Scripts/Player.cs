@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
     float bobTimer = 0;
 
     Rigidbody rb;
+    Collider col;
 
     bool dead = false;
 
@@ -16,13 +17,17 @@ public class Player : MonoBehaviour {
     float explodingTimer = 0;
     [SerializeField] Transform explosionPrefab;
 
+    bool teleporting = false;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        col = GetComponent<Collider>();
+        resetVariables();
 
         if (CameraMovement.m_instance != null)
         {
-            CameraMovement.m_instance.player = transform;
+            CameraMovement.m_instance.setPlayer(transform);
         }
     }
 
@@ -44,14 +49,17 @@ public class Player : MonoBehaviour {
                 }
             }
 
-            if (Input.GetButtonDown("Fire1"))
+            if (!teleporting)
             {
-                exploding = true;
-                explodingTimer = 1;
-            }
-            if (Input.GetButtonUp("Fire1"))
-            {
-                exploding = false;
+                if (Input.GetButtonDown("Fire1"))
+                {
+                    exploding = true;
+                    explodingTimer = 1;
+                }
+                if (Input.GetButtonUp("Fire1"))
+                {
+                    exploding = false;
+                }
             }
 
             if (Input.GetButtonDown("Fire2"))
@@ -86,14 +94,12 @@ public class Player : MonoBehaviour {
         }
         if (explodingTimer <= 0)
         {
-            // explode
+            // explode and make new at spawn
             Destroy(rb);
             GetComponent<BoxCollider>().enabled = false;
             Instantiate(explosionPrefab, transform.position, transform.rotation);
             Transform newCube = Instantiate(cubePrefab, spawnPoint.position, spawnPoint.rotation) as Transform;
             newCube.GetComponent<Player>().setSpawn(spawnPoint);
-            newCube.GetComponent<BoxCollider>().enabled = true;
-            newCube.GetComponent<Player>().exploding = false;
             Destroy(gameObject);
         }
 
@@ -103,7 +109,7 @@ public class Player : MonoBehaviour {
         // random rotation
         transform.eulerAngles = new Vector3(transform.eulerAngles.x + Random.Range(-3f, 3f), transform.eulerAngles.y + Random.Range(-3f, 3f), transform.eulerAngles.z + Random.Range(-3f, 3f));
     }
-
+   
     void makeSpawn()
     {
         spawnPoint.position = transform.position;
@@ -111,7 +117,29 @@ public class Player : MonoBehaviour {
 
     public void setPosition(Vector3 _Position)
     {
+        rb.velocity = Vector3.zero;
         transform.position = _Position;
+    }
+
+    public void setTeleporting(bool _newValue)
+    {
+        if (_newValue)
+        {
+            resetVariables();
+        }
+
+        teleporting = _newValue;
+    }
+
+    void resetVariables()
+    {
+        bobTimer = baseBobTimer;
+        dead = false;
+        exploding = false;
+        explodingTimer = 0;
+        teleporting = false;
+        rb.velocity = Vector3.zero;
+        col.enabled = true;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -120,6 +148,12 @@ public class Player : MonoBehaviour {
         {
             dead = true;
             exploding = true;
+            explodingTimer = 0;
+        }
+
+        if (collision.transform.tag == "Interactable")
+        {
+            collision.transform.GetComponent<InteractableObject>().Interact();
         }
     }
 }

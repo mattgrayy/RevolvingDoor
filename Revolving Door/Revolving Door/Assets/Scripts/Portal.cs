@@ -12,6 +12,8 @@ public class Portal : MonoBehaviour {
     ParticleSystem[] emitters;
     int activeEmitterIndex = 0;
 
+    Rigidbody playerRB;
+
     private void Update()
     {
         if (teleporting)
@@ -31,6 +33,8 @@ public class Portal : MonoBehaviour {
                     activeEmitterIndex++;
                 }
             }
+
+            playerRB.AddForce(Vector3.up * particleTimer);
         }
     }
 
@@ -45,8 +49,8 @@ public class Portal : MonoBehaviour {
     {
         if (!teleporting && other.tag == "Player")
         {
-            other.GetComponent<Rigidbody>().velocity = Vector3.zero;
-
+            other.GetComponent<Player>().setTeleporting(true);
+            playerRB = other.GetComponent<Rigidbody>();
             beginTeleport();
         }
     }

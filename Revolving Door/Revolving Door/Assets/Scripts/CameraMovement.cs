@@ -4,8 +4,9 @@ using System.Collections;
 public class CameraMovement : MonoBehaviour {
 
     public static CameraMovement m_instance;
+    [SerializeField] ScreenSpaceOutline outlineSystem;
 
-    public Transform player;
+    [SerializeField] Transform player;
 
     Vector3 targetPos;
     float yOffset;
@@ -32,9 +33,9 @@ public class CameraMovement : MonoBehaviour {
         {
             Plane[] planesInner;
 
-            GetComponent<Camera>().fieldOfView -= 20f;
+            GetComponent<Camera>().fieldOfView -= 30f;
             planesInner = GeometryUtility.CalculateFrustumPlanes(GetComponent<Camera>());
-            GetComponent<Camera>().fieldOfView += 20f;
+            GetComponent<Camera>().fieldOfView += 30f;
 
             if (!GeometryUtility.TestPlanesAABB(planesInner, player.GetComponent<BoxCollider>().bounds))
             {
@@ -43,5 +44,10 @@ public class CameraMovement : MonoBehaviour {
         }
 
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime);
+    }
+
+    public void setPlayer(Transform _newPlayer)
+    {
+        player = _newPlayer;
     }
 }

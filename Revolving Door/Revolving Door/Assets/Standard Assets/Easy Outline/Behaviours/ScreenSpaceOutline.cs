@@ -48,6 +48,8 @@ public class ScreenSpaceOutline : MonoBehaviour
     public Shader blurShader;
     public Shader outlineShader;
 
+    bool outlineActive = false;
+
     void Awake()
     {
         Init();
@@ -118,6 +120,14 @@ public class ScreenSpaceOutline : MonoBehaviour
 
     void LateUpdate()
     {
-        RunCalcs();
+        if (outlineActive)
+        {
+            RunCalcs();
+        }
+    }
+
+    public void setOutlineActive(bool _newValue)
+    {
+        outlineActive = _newValue;
     }
 }
