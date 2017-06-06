@@ -156,4 +156,18 @@ public class Player : MonoBehaviour {
             collision.transform.GetComponent<InteractableObject>().Interact();
         }
     }
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.transform.tag == "Lethal" && !dead)
+        {
+            dead = true;
+            exploding = true;
+            explodingTimer = 0;
+        }
+
+        if (collision.transform.tag == "Interactable")
+        {
+            collision.transform.GetComponent<InteractableObject>().Interact();
+        }
+    }
 }

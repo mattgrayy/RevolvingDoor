@@ -34,7 +34,7 @@ public class Portal : MonoBehaviour {
                 }
             }
 
-            playerRB.AddForce(Vector3.up * particleTimer);
+            playerRB.AddForce(Vector3.up * particleTimer * 10);
         }
     }
 

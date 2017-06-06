@@ -23,10 +23,10 @@ public class RotateButton : InteractableObject {
         {
             Vector3 currentRotation = rotateObject.eulerAngles;
 
-            currentRotation.y = Mathf.LerpAngle(currentRotation.y, targetRot, Time.deltaTime/2);
+            currentRotation.y = Mathf.MoveTowardsAngle(rotateObject.eulerAngles.y, targetRot, rotationValue * Time.deltaTime);
             rotateObject.eulerAngles = currentRotation;
 
-            if (Mathf.Abs(rotateObject.eulerAngles.y - targetRot) < 1)
+            if (Mathf.Abs(currentRotation.y - targetRot) < 1)
             {
                 rotating = false;
             }
@@ -35,10 +35,14 @@ public class RotateButton : InteractableObject {
 
     public override void Interact()
     {
-        if (!rotating || Mathf.Abs(rotateObject.eulerAngles.y - targetRot) < 5)
+        if (!rotating)
         {
             rotating = true;
             targetRot += rotationValue;
+            if (targetRot > 360)
+            {
+                targetRot -= 360;
+            }
         }
     }
 }
