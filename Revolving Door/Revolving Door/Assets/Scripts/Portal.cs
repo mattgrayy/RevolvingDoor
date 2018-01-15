@@ -19,11 +19,9 @@ public class Portal : MonoBehaviour {
         if (teleporting)
         {
             if (tube.position != transform.position)
-            {
                 tube.position = Vector3.Lerp(tube.position, transform.position, Time.deltaTime);
-            }
 
-            particleTimer += Time.deltaTime * 2;
+            particleTimer += Time.deltaTime * 3;
 
             if (particleTimer > activeEmitterIndex)
             {
@@ -34,14 +32,13 @@ public class Portal : MonoBehaviour {
                 }
             }
 
-            playerRB.AddForce(Vector3.up * particleTimer * 10);
+            playerRB.AddForce(Vector3.up * particleTimer * 15);
         }
     }
 
     void beginTeleport()
     {
         teleporting = true;
-
         emitters = particleOrigin.GetComponentsInChildren<ParticleSystem>();
     }
 

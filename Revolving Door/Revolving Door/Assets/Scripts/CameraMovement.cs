@@ -14,13 +14,9 @@ public class CameraMovement : MonoBehaviour {
     private void Start()
     {
         if (m_instance)
-        {
             Destroy(this.gameObject);
-        }
         else
-        {
             m_instance = this;
-        }
 
         targetPos = transform.position;
         yOffset = transform.position.y - player.position.y;
@@ -38,9 +34,7 @@ public class CameraMovement : MonoBehaviour {
             GetComponent<Camera>().fieldOfView += 30f;
 
             if (!GeometryUtility.TestPlanesAABB(planesInner, player.GetComponent<BoxCollider>().bounds))
-            {
                 targetPos = new Vector3(player.position.x, player.position.y + yOffset, transform.position.z);
-            }
         }
 
         transform.position = Vector3.Lerp(transform.position, targetPos, Time.deltaTime);

@@ -12,9 +12,7 @@ public class RotateButton : InteractableObject {
     private void Start()
     {
         if (rotateObject != null)
-        {
             targetRot = rotateObject.eulerAngles.y;
-        }
     }
 
     private void Update()
@@ -27,9 +25,7 @@ public class RotateButton : InteractableObject {
             rotateObject.eulerAngles = currentRotation;
 
             if (Mathf.Abs(currentRotation.y - targetRot) < 1)
-            {
                 rotating = false;
-            }
         }
     }
 
@@ -39,10 +35,9 @@ public class RotateButton : InteractableObject {
         {
             rotating = true;
             targetRot += rotationValue;
+
             if (targetRot > 360)
-            {
                 targetRot -= 360;
-            }
         }
     }
 }

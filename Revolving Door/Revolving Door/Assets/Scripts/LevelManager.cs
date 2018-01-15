@@ -6,7 +6,8 @@ using UnityEngine.UI;
 public enum Level
 {
     LEVEL_LOBBY = 0,
-    LEVEL_1 = 1
+    LEVEL_1 = 1,
+    LEVEL_2 = 2
 }
 
 public class LevelManager : MonoBehaviour {
@@ -27,9 +28,7 @@ public class LevelManager : MonoBehaviour {
             DontDestroyOnLoad(this.gameObject);
         }
         else
-        {
             Destroy(gameObject);
-        }
     }
 
     private void Update()
@@ -42,9 +41,7 @@ public class LevelManager : MonoBehaviour {
                 transitionImage.color = new Color(transitionImage.color.r, transitionImage.color.g, transitionImage.color.b, transitionTimer);
 
                 if (transitionTimer >= 1)
-                {
                     SceneManager.LoadSceneAsync((int)targetLevel, LoadSceneMode.Single);
-                }
             }
             else if (transitionTimer < 2)
             {

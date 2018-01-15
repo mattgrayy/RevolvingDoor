@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections;
 
 public class Player : MonoBehaviour {
@@ -26,9 +27,7 @@ public class Player : MonoBehaviour {
         resetVariables();
 
         if (CameraMovement.m_instance != null)
-        {
             CameraMovement.m_instance.setPlayer(transform);
-        }
     }
 
     public void setSpawn(Transform _spawnPoint)
@@ -36,17 +35,42 @@ public class Player : MonoBehaviour {
         spawnPoint = _spawnPoint;
     }
 
-    // Update is called once per frame
-    void FixedUpdate ()
+    public Vector2 inputPos;
+    public Vector2 dragPosOrigin;
+    public Vector2 dragPos;
+    public bool dragging = false;
+
+    void takeInput()
+    {
+        inputPos = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+
+        if(Input.GetMouseButtonDown(0))
+        {
+            dragPosOrigin = Input.mousePosition;
+            dragPos = Input.mousePosition;
+            dragging = true;
+        }
+
+        if (Input.GetMouseButton(0))
+            dragPos = Input.mousePosition;
+
+        if (Input.GetMouseButtonUp(0))
+            dragging = false;
+    }
+
+        // Update is called once per frame
+        void FixedUpdate ()
     {
         if (!dead)
         {
             if (!exploding)
             {
-                if (Input.GetAxis("Horizontal") != 0 || Input.GetAxis("Vertical") != 0)
-                {
+                takeInput();
+
+                if (inputPos != Vector2.zero)
                     checkBob();
-                }
+                else if (dragging && dragPos != dragPosOrigin)
+                    checkBob(true);
             }
 
             if (!teleporting)
@@ -57,41 +81,38 @@ public class Player : MonoBehaviour {
                     explodingTimer = 1;
                 }
                 if (Input.GetButtonUp("Fire1"))
-                {
                     exploding = false;
-                }
             }
 
             if (Input.GetButtonDown("Fire2"))
-            {
                 makeSpawn();
-            }
         }
+
         if (exploding)
-        {
             checkExplode();
-        }
     }
 
-    void checkBob()
+    void checkBob(bool _drag = false)
     {
         if (bobTimer > 0)
-        {
             bobTimer -= Time.deltaTime;
-        }
+
         if (bobTimer <= 0)
         {
             bobTimer = baseBobTimer;
-            rb.AddForce(((Vector3.up * 1.2f) + (Vector3.right * Input.GetAxis("Horizontal")) + (Vector3.forward * Input.GetAxis("Vertical"))) * 500);
+
+            if(_drag)
+                rb.AddForce(((Vector3.up * 1.2f) + (Vector3.right * Mathf.Clamp((dragPos.x - dragPosOrigin.x), -1,1)) + (Vector3.forward * Mathf.Clamp((dragPos.y - dragPosOrigin.y), -1,1))) * 500);
+            else
+                rb.AddForce(((Vector3.up * 1.2f) + (Vector3.right * inputPos.x) + (Vector3.forward * inputPos.y)) * 500);
         }
     }
 
     void checkExplode()
     {
         if (explodingTimer > 0)
-        {
             explodingTimer -= Time.deltaTime;
-        }
+
         if (explodingTimer <= 0)
         {
             // explode and make new at spawn
@@ -103,7 +124,7 @@ public class Player : MonoBehaviour {
             Destroy(gameObject);
         }
 
-     // shake based on explodingtimer
+        // shake based on explodingtimer
         // random position
         transform.position = new Vector3(transform.position.x + Random.Range(-0.02f,0.02f), transform.position.y + Random.Range(0, 0.02f), transform.position.z + Random.Range(-0.02f, 0.02f));
         // random rotation
@@ -124,9 +145,7 @@ public class Player : MonoBehaviour {
     public void setTeleporting(bool _newValue)
     {
         if (_newValue)
-        {
             resetVariables();
-        }
 
         teleporting = _newValue;
     }
@@ -152,9 +171,7 @@ public class Player : MonoBehaviour {
         }
 
         if (collision.transform.tag == "Interactable")
-        {
             collision.transform.GetComponent<InteractableObject>().Interact();
-        }
     }
     private void OnTriggerEnter(Collider collision)
     {
@@ -166,8 +183,6 @@ public class Player : MonoBehaviour {
         }
 
         if (collision.transform.tag == "Interactable")
-        {
             collision.transform.GetComponent<InteractableObject>().Interact();
-        }
     }
 }

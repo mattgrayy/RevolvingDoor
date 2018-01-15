@@ -8,8 +8,6 @@ public class Teleporter : InteractableObject {
     public override void Interact()
     {
         if (LevelManager.m_instance != null)
-        {
             LevelManager.m_instance.loadLevel(targetLevel);
-        }
     }
 }
